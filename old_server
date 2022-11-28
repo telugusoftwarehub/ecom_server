@@ -1,0 +1,55 @@
+const express = require('express');
+const app = express();
+
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const cors = require('cors')
+const port = 3001;
+const sessionInfo = {
+  id: '',
+  user: ''
+}
+
+app.use(express.json());
+  
+// For parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));  
+app.use(cors());
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'saix#$%^@!alucy',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}));
+
+app.post('/login', function (req, res) {
+  const { username, password } = req.body;
+  console.log(username, password);
+
+  if(username === 'sai' && password === '123') {
+    sessionInfo.id = req.sessionID;
+    sessionInfo.user = username;
+    res.send(sessionInfo);
+  } else {
+    res.send("Please check your username and password!")
+  }
+});
+
+app.post('/users', function (req, res) {
+  const { id } = req.body;
+  if(id === sessionInfo.id) {
+    res.send([{
+      username: "Sai",
+      id: '001'
+    }]);
+  } else {
+    res.send("Please check your session!")
+  }
+});
+
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})``
